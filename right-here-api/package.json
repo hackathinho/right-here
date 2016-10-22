@@ -1,0 +1,16 @@
+{
+  "name": "right-here-api",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "zmq": "~2.15.3",
+    "express": "~4.14.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "GPUL",
+  "license": "AGPL"
+}
