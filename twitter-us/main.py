@@ -7,11 +7,12 @@ context = zmq.Context()
 
 def setup_queues():
     receiver = context.socket(zmq.SUB)
-    sender = context.socket(zmq.PUB)
+    sender = context.socket(zmq.PUSH)
 
+    receiver.setsockopt(zmq.SUBSCRIBE, '')
     receiver.connect(os.environ.get('ZMQ_PULL_QUEUE', 'tcp://127.0.0.1:3000'))
+
     sender.connect(os.environ.get('ZMQ_PUSH_QUEUE', 'tcp://127.0.0.1:3333'))
-    receiver.subscribe('request')
 
     return receiver, sender
 
@@ -40,7 +41,7 @@ def main():
 
     while not should_exit:
         msg = receiver.recv().decode('utf-8')
-        msg = receiver.recv().decode('utf-8')
+
         print("Got message: {0}".format(msg))
         msg = json.loads(msg)
         if 'control' in msg and msg['control'] == 'EXIT':
