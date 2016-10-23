@@ -3,22 +3,25 @@ var zmq = require('zmq');
 
 var app = express();
 
-var publisher = zmq.socket('pub');
-publisher.bindSync('tcp://127.0.0.1:3000');
+var sender = zmq.socket('push');
+sender.bindSync('tcp://127.0.0.1:3000');
 
-var subscriber = zmq.socket('sub');
-subscriber.connect('tcp://127.0.0.1:3000');
-subscriber.subscribe('response');
+var receiver = zmq.socket('pull');
+receiver.bindSync('tcp://127.0.0.1:3333');
 var resultsBuffer = {};
-subscriber.on('message', function(topic, msg) {
+
+receiver.on('message', function(msg) {
+  if (!resultsBuffer[msg.replyId]) {
+      resultsBuffer[msg.replyId] = []
+  }
   resultsBuffer[msg.replyId].concat(msg.data);//Componer resultados
-  console.log('Topic %s: %s', topic.toString(), msg.toString());
+  console.log('Message: %s', msg);
 });
 
 app.get('/geotimeline', function(req, res) {
   //res.json({clave:'Hola mundo'});
   var msgId = 1;
-  publisher.send(['request', {replyId: msgId, data: {lat: 43.02345, lon: -7.23456}}]);
+  sender.send("rato");
   setTimeout(function() {
     res.send(resultsBuffer[msgId]);
   },5000);
