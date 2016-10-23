@@ -10,6 +10,8 @@ import scala.concurrent.duration._
 import zeromq._
 import akka.util.ByteString
 import scala.concurrent.ExecutionContext.Implicits.global
+import spray.json._
+import DefaultJsonProtocol._
 
 object Boot extends App {
 
@@ -29,14 +31,10 @@ object Boot extends App {
   receiver.connect("tcp://127.0.0.1:3000")
   sender.connect("tcp://127.0.0.1:3333")
 
-  val message = receiver.recv() // returns Future, default timeout 1s
-  message map {m => {
-        println("Message" + m)
-        sender.send(Message(ByteString("Hola")))
-    }
-  }
-
   receiver.recvAll { message: Message =>
-    println("received: " + message.map(_.utf8String).mkString(" "))
+    val strMessage = message.map(_.utf8String).mkString(" ")
+    println("received: " + strMessage)
+
+    sender.send(Message(ByteString(strMessage)))
   }
 }
