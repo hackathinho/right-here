@@ -24,11 +24,11 @@ receiver.on('message', function(msg) {
 
 app.get('/geotimeline', function(req, res) {
   var msgId = 1;
-  sender.send(['request', JSON.stringify({replyId: msgId, data: {lat: 43.02345, lon: -7.23456}})]);
+  sender.send(JSON.stringify({replyId: msgId, data: {lat: req.query.lat, lon: req.query.lon}}));
   setTimeout(function() {
-    res.send(JSON.stringify(resultsBuffer[msgId]));
-    resultsBuffer[msgId] = undefined;
-  }, 1000);
+    res.send(resultsBuffer[msgId]);
+    resultsBuffer[msgId] = []
+  },1000);
 });
 
 app.listen(8000, function() {
