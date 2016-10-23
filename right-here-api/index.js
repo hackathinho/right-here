@@ -11,17 +11,17 @@ receiver.bindSync('tcp://127.0.0.1:3333');
 var resultsBuffer = {};
 
 receiver.on('message', function(msg) {
+  msg = JSON.parse(msg);
   if (!resultsBuffer[msg.replyId]) {
       resultsBuffer[msg.replyId] = []
   }
-  resultsBuffer[msg.replyId].concat(msg.data);//Componer resultados
-  console.log('Message: %s', msg);
+  resultsBuffer[msg.replyId].push(msg.data);//Componer resultados
 });
 
 app.get('/geotimeline', function(req, res) {
   //res.json({clave:'Hola mundo'});
   var msgId = 1;
-  sender.send("rato");
+  sender.send(JSON.stringify({replyId: msgId, data: {lat: 43.02345, lon: -7.23456}}));
   setTimeout(function() {
     res.send(resultsBuffer[msgId]);
   },5000);
